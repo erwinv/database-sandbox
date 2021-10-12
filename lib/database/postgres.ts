@@ -1,0 +1,1 @@
+import objection from 'objection'
