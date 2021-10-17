@@ -1,8 +1,15 @@
 import { format } from 'util'
-import { EnvVars, num } from '@erwinv/envvar'
+import { EnvVars, num, str, url } from '@erwinv/envvar'
 
 const envVars = new EnvVars({
   PORT: num(),
+  MONGODB_URI: url().default(new URL('mongodb://localhost:27017/test')),
+  MONGODB_USER: str(),
+  MONGODB_PASSWORD: str(),
+  POSTGRES_HOST: str().default('localhost'),
+  POSTGRES_USER: str(),
+  POSTGRES_PASSWORD: str(),
+  POSTGRES_DATABASE: str().default('test'),
 })
 
 const runningAsMain = require.main === module

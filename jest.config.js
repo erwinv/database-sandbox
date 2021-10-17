@@ -12,5 +12,5 @@ module.exports = {
     "<rootDir>/test/setupAfterEnv.js"
   ],
   testEnvironment: "jest-environment-node",
-  verbose: true
+  verbose: true,
 };

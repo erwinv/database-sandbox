@@ -1,6 +1,14 @@
 import 'dotenv/config'
 
-import app from './lib/app'
+import app, { initializeServiceDependencies } from './lib/app'
 import env from './lib/env'
 
-app().listen(env.PORT, () => console.log(`Listening to port: ${env.PORT}`))
+async function main() {
+  await initializeServiceDependencies()
+  app().listen(env.PORT, () => console.log(`Listening to port: ${env.PORT}`))
+}
+
+const runningAsMain = require.main === module
+if (runningAsMain) {
+  main()
+}
