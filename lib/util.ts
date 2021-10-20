@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-function getQueryValue(query: Partial<Record<string, string | string[]>>, name: string) {
+export function getQueryValue(query: Partial<Record<string, string | string[]>>, name: string) {
   if (_.isNil(query[name])) return null
 
   return _.isArray(query[name])

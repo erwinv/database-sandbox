@@ -2,7 +2,7 @@ import _ from 'lodash'
 import Koa from 'koa'
 import UserCoupon, { IUserCoupon } from '../model/usercoupon'
 import { fakeUserCoupon } from './userCoupon.fake'
-import { getQueryFlag, getQueryNumber } from '../util'
+import { getQueryFlag, getQueryNumber, getQueryValue } from '../util'
 
 export function create(): Koa.Middleware {
   return async (ctx) => {
@@ -66,5 +66,39 @@ export function findMany(): Koa.Middleware {
     } else {
       ctx.body = await UserCoupon.findOne(body)
     }
+  }
+}
+
+export function bulkDeleteOld(): Koa.Middleware {
+  return async (ctx) => {
+    const endDate = getQueryValue(ctx.query, 'lt')
+    if (!/\d{4}-\d{2}-\d{2}/.test(endDate ?? '')) {
+      ctx.status = 400
+      return
+    }
+
+    const bulk = UserCoupon.collection.initializeUnorderedBulkOp()
+
+    bulk
+      .find({
+        _created_at: {
+          $lt: new Date(`${endDate}T00:00:00.000+07:00`)
+        }
+      })
+      .delete()
+
+    // this could possibly take minutes or longer, so don't await
+    const start = Date.now()
+    bulk.execute({}, (error, result) => {
+      const duration = Date.now() - start
+
+      if (error) {
+        console.error({ duration, error })
+      } else {
+        console.info({ duration, result })
+      }
+    })
+
+    ctx.status = 202
   }
 }

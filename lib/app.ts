@@ -34,6 +34,7 @@ export default () => {
     .get('/usercoupon', userCoupon.findOne())
     .post('/usercoupons', userCoupon.createMany())
     .get('/usercoupons', userCoupon.findMany())
+    .del('/usercoupons', userCoupon.bulkDeleteOld())
 
   return app
     .use(logger())

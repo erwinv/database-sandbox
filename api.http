@@ -19,9 +19,11 @@ POST http://localhost:8765/usercoupons?fake=1&qty=1000&merge=1
 content-type: application/json
 
 {
-  "_created_at": "2019-10-19T09:22:54.033Z"
+  "_created_at": "2018-10-19T09:22:54.033Z"
 }
 
 GET http://localhost:8765/usercoupon?sample=1
 
 GET http://localhost:8765/usercoupons?sample=1&qty=4
+
+DELETE http://localhost:8765/usercoupons?lt=2020-10-10

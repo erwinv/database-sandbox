@@ -11,7 +11,7 @@ async function seedMongo(total: number, chunk: number) {
   for (const batch of _.chunk(_.range(0, total), chunk)) {
     await UserCoupon.insertMany(batch.map(() => fakeUserCoupon()))
     const now = parseInt(`${process.hrtime.bigint() / 1000000n}`, 10)
-    console.log(`Inserted batch: ${_.first(batch)}-${_.last(batch)}, delta: ${((now-last)/1000).toFixed(1)}s, total: ${((now-start)/1000).toFixed(1)}s`)
+    console.info(`Inserted batch: ${_.first(batch)}-${_.last(batch)}, delta: ${((now-last)/1000).toFixed(1)}s, total: ${((now-start)/1000).toFixed(1)}s`)
     last = now
   }
 }
