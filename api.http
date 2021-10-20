@@ -27,3 +27,5 @@ GET http://localhost:8765/usercoupon?sample=1
 GET http://localhost:8765/usercoupons?sample=1&qty=4
 
 DELETE http://localhost:8765/usercoupons?lt=2020-10-10
+
+POST http://localhost:8765/admin/notification/partitions

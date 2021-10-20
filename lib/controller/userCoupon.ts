@@ -1,10 +1,10 @@
 import _ from 'lodash'
-import Koa from 'koa'
+import koa from 'koa'
 import UserCoupon, { IUserCoupon } from '../model/usercoupon'
 import { fakeUserCoupon } from './userCoupon.fake'
 import { getQueryFlag, getQueryNumber, getQueryValue } from '../util'
 
-export function create(): Koa.Middleware {
+export function create(): koa.Middleware {
   return async (ctx) => {
     const isFake = getQueryFlag(ctx.query, 'fake')
     const isMerge = getQueryFlag(ctx.query, 'merge')
@@ -21,7 +21,7 @@ export function create(): Koa.Middleware {
   }
 }
 
-export function createMany(): Koa.Middleware {
+export function createMany(): koa.Middleware {
   return async (ctx) => {
     const isFake = getQueryFlag(ctx.query, 'fake')
     const isMerge = getQueryFlag(ctx.query, 'merge')
@@ -38,7 +38,7 @@ export function createMany(): Koa.Middleware {
   }
 }
 
-export function findOne(): Koa.Middleware {
+export function findOne(): koa.Middleware {
   return async (ctx) => {
     const isSample = getQueryFlag(ctx.query, 'sample')
     const body = ctx.request.body ?? {}
@@ -53,7 +53,7 @@ export function findOne(): Koa.Middleware {
   }
 }
 
-export function findMany(): Koa.Middleware {
+export function findMany(): koa.Middleware {
   return async (ctx) => {
     const isSample = getQueryFlag(ctx.query, 'sample')
     const quantity = _.clamp(getQueryNumber(ctx.query, 'qty', 1), 1, 10)
@@ -69,7 +69,7 @@ export function findMany(): Koa.Middleware {
   }
 }
 
-export function bulkDeleteOld(): Koa.Middleware {
+export function bulkDeleteOld(): koa.Middleware {
   return async (ctx) => {
     const endDate = getQueryValue(ctx.query, 'lt')
     if (!/\d{4}-\d{2}-\d{2}/.test(endDate ?? '')) {

@@ -1,12 +1,12 @@
-import Koa from 'koa'
+import koa from 'koa'
 
-export function ping(): Koa.Middleware {
+export function ping(): koa.Middleware {
   return async (ctx) => {
     ctx.body = 'pong'
   }
 }
 
-export function info(): Koa.Middleware {
+export function info(): koa.Middleware {
   return async (ctx) => {
     ctx.body = {
       platform: process.platform,

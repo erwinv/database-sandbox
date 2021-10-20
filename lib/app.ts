@@ -7,6 +7,7 @@ import initializeObjection, { teardownObjection } from './database/postgres'
 import {
   userCoupon,
   node,
+  notification,
 } from './controller'
 
 export async function initializeServiceDependencies() {
@@ -35,6 +36,7 @@ export default () => {
     .post('/usercoupons', userCoupon.createMany())
     .get('/usercoupons', userCoupon.findMany())
     .del('/usercoupons', userCoupon.bulkDeleteOld())
+    .post('/admin/notification/partitions', notification.createWeekPartitions())
 
   return app
     .use(logger())
