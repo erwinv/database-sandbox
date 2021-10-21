@@ -37,6 +37,7 @@ export default () => {
     .get('/usercoupons', userCoupon.findMany())
     .del('/usercoupons', userCoupon.bulkDeleteOld())
     .post('/admin/notification/partitions', notification.createWeekPartitions())
+    .del('/admin/notification/oldpartitions', notification.dropOldPartitions())
 
   return app
     .use(logger())
