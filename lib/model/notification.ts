@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import objection from 'objection'
-import { DateTime } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 
 const timeZone = 'Asia/Bangkok'
 const numWeeks = 12
@@ -21,6 +21,30 @@ function getAllPartitionNames() {
   WHERE inhparent = '${tableName}'::regclass;`
 }
 
+function isPartitionObsolete(partitionName: string) {
+  const match = /^notification_y(\d+)w(\d+)$/.exec(partitionName)
+  if (!match) return false
+
+  const [, year, week] = match
+
+  const thisWeekWednesday = DateTime.local()
+    .setZone(timeZone)
+    .set({ weekday: 3 })
+    .startOf('day')
+
+  const partitionWednesday = DateTime
+    .fromObject({
+      weekYear: _.toNumber(year),
+      weekNumber: _.toNumber(week),
+      weekday: 3
+    }, {
+      zone: timeZone,
+    })
+    .startOf('day')
+
+  return thisWeekWednesday.diff(partitionWednesday) > Duration.fromISO(`P${numWeeks}W`)
+}
+
 export default class Notification extends objection.Model {
   static async ensurePartitions() {
     const knex = this.knex()
@@ -37,12 +61,15 @@ export default class Notification extends objection.Model {
   static async dropOldPartitions() {
     const knex = this.knex()
 
-    const rawResult = await knex.schema.raw(getAllPartitionNames()) as any
-    const rows: Record<'child', string>[] = rawResult.rows
+    const rawResult = await knex.schema.raw(getAllPartitionNames()) as unknown as Record<'rows', Record<'child', string>[]>
+    const rows = rawResult.rows
     const partitionNames = rows.map(({ child }) => child)
 
-    // TODO identify partitions with week numbers older than current minus numWeeks (12)
-    // and call drop table on them
-    return partitionNames
+    const dropOldPartitionsQuery = partitionNames
+      .filter(isPartitionObsolete)
+      .map(partitionName => `DROP TABLE IF EXISTS ${partitionName};`)
+      .join('\n')
+
+    await knex.schema.raw(dropOldPartitionsQuery)
   }
 }

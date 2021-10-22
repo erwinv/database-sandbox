@@ -10,6 +10,7 @@ export function createWeekPartitions(): koa.Middleware {
 
 export function dropOldPartitions(): koa.Middleware {
   return async (ctx) => {
-    ctx.body = await Notification.dropOldPartitions()
+    await Notification.dropOldPartitions()
+    ctx.status = 200
   }
 }
