@@ -24,6 +24,60 @@ content-type: application/json
 
 GET http://localhost:8765/usercoupon?sample=1
 
+PATCH http://localhost:8765/usercoupon
+content-type: application/json
+
+{
+  "_id": "616e8ef439d6c5b178f304f7",
+  "isUsed": true
+}
+
+PUT http://localhost:8765/usercoupon
+content-type: application/json
+
+{
+    "_id" : "616e8ef439d6c5b178f304f7",
+    "startAt" : "2048-09-14T14:44:06.157Z",
+    "expireAt" : "2015-04-06T17:44:20.305Z",
+    "thumbnailImg" : "http://placeimg.com/640/480",
+    "detailImg" : "http://placeimg.com/640/480",
+    "name" : "http://placeimg.com/640/480",
+    "promotionCode" : "v16bxi0uhw9c",
+    "projectCode" : "xvh6gj5jpyje",
+    "_p_partner" : "Partner$qa6ujtnqsb",
+    "conditionUrl" : "https://hilbert.info",
+    "_p_user" : "_User$dfi0waxaui",
+    "_p_coupon" : "Coupon$kjsqglku51",
+    "maxUse" : 5,
+    "remainingUse" : 2,
+    "isProcessing" : false,
+    "isPrepaid" : true,
+    "origin" : "llv3loqf6p",
+    "status" : "non-volatile",
+    "barcodes" : [ 
+        {
+            "couponUserId" : "rsnzl76tg3",
+            "isUsed" : true,
+            "xcode" : "vvbtcz21si4yezv",
+            "_id" : "616e8ef439d6c5b178f304f8"
+        }
+    ],
+    "isUsed" : true,
+    "isActive" : true,
+    "gsStarIssue" : {
+        "channelTranId" : "8517e74a-a326-45c0-8d6c-82050ac007ea",
+        "transactionId" : "x7smo0hk7nduj",
+        "promotionId" : "aflas3nxxv",
+        "rewardId" : "gimpggti",
+        "issueDate" : "2071-03-06T14:49:20.721Z",
+        "issueStatus" : "back-end",
+        "errorCode" : "0xth5f",
+        "errorMessage" : "Ball Ohio Yen Coordinator archive Supervisor"
+    },
+    "_created_at" : "2021-10-19T09:25:08.171Z",
+    "_updated_at" : "2021-10-24T11:37:56.184Z"
+}
+
 GET http://localhost:8765/usercoupons?sample=1&qty=4
 
 DELETE http://localhost:8765/usercoupons?lt=2020-10-10

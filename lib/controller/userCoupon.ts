@@ -69,6 +69,26 @@ export function findMany(): koa.Middleware {
   }
 }
 
+export function updateOne(): koa.Middleware {
+  return async (ctx) => {
+    const body = ctx.request.body
+
+    const filter = _.pick(body, ['_id'])
+    const update = _.omitBy(body, (_, key) => key.startsWith('_'))
+
+    if (_.isEmpty(filter) || _.isEmpty(update)) {
+      ctx.status = 400
+      return
+    }
+
+    if (ctx.method === 'PUT') {
+      ctx.body = await UserCoupon.replaceOne(filter, update)
+    } else if (ctx.method === 'PATCH') {
+      ctx.body = await UserCoupon.updateOne(filter, update)
+    }
+  }
+}
+
 export function bulkDeleteOld(): koa.Middleware {
   return async (ctx) => {
     const endDate = getQueryValue(ctx.query, 'lt')

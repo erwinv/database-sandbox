@@ -15,11 +15,17 @@ export default () => {
     .get('/', node.ping())
     .get('/ping', node.ping())
     .get('/info', node.info())
+
     .post('/usercoupon', userCoupon.create())
     .get('/usercoupon', userCoupon.findOne())
+    .put('/usercoupon', userCoupon.updateOne())
+    .patch('/usercoupon', userCoupon.updateOne())
+
     .post('/usercoupons', userCoupon.createMany())
     .get('/usercoupons', userCoupon.findMany())
+
     .del('/usercoupons', userCoupon.bulkDeleteOld())
+
     .post('/admin/notification/partitions', notification.createWeekPartitions())
     .del('/admin/notification/oldpartitions', notification.dropOldPartitions())
 

@@ -12,5 +12,13 @@ export let options = {
 export default function () {
   let res = http.get('http://localhost:8765/usercoupon?sample=1')
   check(res, { 'status was 200': (r) => r.status == 200 })
-  sleep(1);
+  sleep(1)
+
+  res = http.post('http://localhost:8765/usercoupon?fake=1')
+  check(res, { 'status was 201': (r) => r.status == 201 })
+  sleep(1)
+
+  // patch
+
+  // put
 }
