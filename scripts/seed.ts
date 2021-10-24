@@ -1,7 +1,7 @@
 import 'dotenv/config'
 
 import _ from 'lodash'
-import { initializeServiceDependencies, teardownServiceDependencies } from '../lib/app'
+import setup from '../lib/setup'
 import UserCoupon from '../lib/model/usercoupon'
 import { fakeUserCoupon } from '../lib/controller/userCoupon.fake'
 
@@ -21,14 +21,10 @@ async function seedPostgres() {
 }
 
 async function main() {
-  try {
-    await initializeServiceDependencies()
-  
-    await seedMongo(10000, 1000)
-    // await seedPostgres()
-  } finally {
-    await teardownServiceDependencies()
-  }
+  await setup()
+
+  await seedMongo(10000, 1000)
+  // await seedPostgres()
 }
 
 const runningAsMain = require.main === module

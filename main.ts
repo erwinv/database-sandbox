@@ -1,10 +1,11 @@
 import 'dotenv/config'
 
-import app, { initializeServiceDependencies } from './lib/app'
+import app from './lib/app'
 import env from './lib/env'
+import setup from './lib/setup'
 
 async function main() {
-  await initializeServiceDependencies()
+  await setup()
   app().listen(env.PORT, () => console.info(`Listening to port: ${env.PORT}`))
 }
 
