@@ -24,19 +24,19 @@ content-type: application/json
 
 GET http://localhost:8765/usercoupon?sample=1
 
-PATCH http://localhost:8765/usercoupon
+GET http://localhost:8765/usercoupon/616e8ef439d6c5b178f304f7
+
+PATCH http://localhost:8765/usercoupon/616e8ef439d6c5b178f304f7
 content-type: application/json
 
 {
-  "_id": "616e8ef439d6c5b178f304f7",
   "isUsed": true
 }
 
-PUT http://localhost:8765/usercoupon
+PUT http://localhost:8765/usercoupon/616e8ef439d6c5b178f304f7
 content-type: application/json
 
 {
-    "_id" : "616e8ef439d6c5b178f304f7",
     "startAt" : "2048-09-14T14:44:06.157Z",
     "expireAt" : "2015-04-06T17:44:20.305Z",
     "thumbnailImg" : "http://placeimg.com/640/480",

@@ -53,6 +53,12 @@ export function findOne(): koa.Middleware {
   }
 }
 
+export function findById(): koa.Middleware {
+  return async (ctx) => {
+    ctx.body = await UserCoupon.findById(ctx.params.id)
+  }
+}
+
 export function findMany(): koa.Middleware {
   return async (ctx) => {
     const isSample = getQueryFlag(ctx.query, 'sample')
@@ -73,10 +79,10 @@ export function updateOne(): koa.Middleware {
   return async (ctx) => {
     const body = ctx.request.body
 
-    const filter = _.pick(body, ['_id'])
+    const filter = { _id: ctx.params.id }
     const update = _.omitBy(body, (_, key) => key.startsWith('_'))
 
-    if (_.isEmpty(filter) || _.isEmpty(update)) {
+    if (_.isEmpty(update)) {
       ctx.status = 400
       return
     }

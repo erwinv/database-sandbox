@@ -18,8 +18,9 @@ export default () => {
 
     .post('/usercoupon', userCoupon.create())
     .get('/usercoupon', userCoupon.findOne())
+    .get('/usercoupon/:id', userCoupon.findById())
     .put('/usercoupon', userCoupon.updateOne())
-    .patch('/usercoupon', userCoupon.updateOne())
+    .patch('/usercoupon/:id', userCoupon.updateOne())
 
     .post('/usercoupons', userCoupon.createMany())
     .get('/usercoupons', userCoupon.findMany())
