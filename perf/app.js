@@ -40,7 +40,7 @@ export const options = {
 
 const SLEEP_DURATION = 0.1
 
-export function setup() {
+export default function () {
   let usercoupons = []
   let res = {}
   
@@ -65,12 +65,6 @@ export function setup() {
   }
   usercoupons.push(res.json())
   sleep(SLEEP_DURATION)
-
-  return { usercoupons }
-}
-
-export default function ({ usercoupons }) {
-  let res = {}
 
   const headers = {
     'content-type': 'application/json'
