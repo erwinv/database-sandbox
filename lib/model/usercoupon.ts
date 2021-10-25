@@ -5,7 +5,6 @@ import mongoose from 'mongoose'
 // Indexes Total Size: 11.19GB
 
 export interface IUserCoupon {
-  // _id: mongoose.Types.ObjectId
   startAt: Date
   expireAt: Date
   // imageUrl: string
@@ -29,8 +28,6 @@ export interface IUserCoupon {
     isUsed: boolean
     xcode: string
   }>
-  _updated_at?: Date
-  _created_at?: Date
   isUsed: boolean
   isActive: boolean
 
@@ -59,71 +56,78 @@ export interface IUserCoupon {
   }
 }
 
+export interface IUserCouponDoc extends IUserCoupon {
+  _id: mongoose.Types.ObjectId
+  _created_at: Date
+  _updated_at: Date
+}
+
+export const NonEditableFields = ['_id', '_created_at', '_updated_at']
+
 const Indexed = <T>(ctor: T) => ({
   type: ctor,
   index: true,
 })
 
 const userCouponSchema = new mongoose.Schema<IUserCoupon>({
-    // _id: mongoose.Types.ObjectId,
-    startAt: Date,
-    expireAt: Date,
-    // imageUrl: String,
-    thumbnailImg: String,
-    detailImg: String,
-    name: String,
-    promotionCode: String,
-    projectCode: String,
-    _p_partner: String,
-    conditionUrl: String,
-    _p_user: String,
-    _p_coupon: String,
-    maxUse: Number,
-    remainingUse: Number,
-    isProcessing: Boolean,
-    isPrepaid: Boolean,
-    origin: String,
-    status: String,
-    barcodes: [{
-      couponUserId: String,
-      isUsed: Boolean,
-      xcode: String,
-    }],
-    isUsed: { type: Boolean, default: false },
-    isActive: { type: Boolean, default: true },
+  startAt: Date,
+  expireAt: Date,
+  // imageUrl: String,
+  thumbnailImg: String,
+  detailImg: String,
+  name: String,
+  promotionCode: String,
+  projectCode: String,
+  _p_partner: String,
+  conditionUrl: String,
+  _p_user: String,
+  _p_coupon: String,
+  maxUse: Number,
+  remainingUse: Number,
+  isProcessing: Boolean,
+  isPrepaid: Boolean,
+  origin: String,
+  status: String,
+  barcodes: [{
+    couponUserId: String,
+    isUsed: Boolean,
+    xcode: String,
+  }],
+  isUsed: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
 
-    // campaignCode: String,
-    // isSeen: { type: Boolean, default: false },
-    // transId: String,
-    // xCode: String,
-    // discountBarcode: String,
-    // statusFromCS: String,
-    // isTrueShakePremium: Boolean,
-    // _p_breakfastRewardTicket: String,
-    // expiresBarcodeAt: String,
-    // transferTo: String,
-    // updatedAt: Date,
-    // expireFromCS: String,
-    // _p_rewardTicket: String,
-    gsStarIssue: {
-      channelTranId: Indexed(String),
-      transactionId: Indexed(String),
-      promotionId: Indexed(String),
-      rewardId: Indexed(String),
-      issueDate: Indexed(Date),
-      issueStatus: Indexed(String),
-      errorCode: Indexed(String),
-      errorMessage: String
-    },
-  }, {
-    collection: 'UserCoupon',
-    versionKey: false,
-    strict: false, // prolly need since we don't know all fields
-    // id: false, // don't use default mongoose ids
-    timestamps: {
-      createdAt: '_created_at',
-      updatedAt: '_updated_at',
-    },
-  })
+  // campaignCode: String,
+  // isSeen: { type: Boolean, default: false },
+  // transId: String,
+  // xCode: String,
+  // discountBarcode: String,
+  // statusFromCS: String,
+  // isTrueShakePremium: Boolean,
+  // _p_breakfastRewardTicket: String,
+  // expiresBarcodeAt: String,
+  // transferTo: String,
+  // updatedAt: Date,
+  // expireFromCS: String,
+  // _p_rewardTicket: String,
+  gsStarIssue: {
+    channelTranId: Indexed(String),
+    transactionId: Indexed(String),
+    promotionId: Indexed(String),
+    rewardId: Indexed(String),
+    issueDate: Indexed(Date),
+    issueStatus: Indexed(String),
+    errorCode: Indexed(String),
+    errorMessage: String
+  },
+}, {
+  collection: 'UserCoupon',
+  versionKey: false,
+  strict: false, // prolly need since we don't know all fields
+  // id: false, // don't use default mongoose ids
+  timestamps: {
+    createdAt: '_created_at',
+    updatedAt: '_updated_at',
+  },
+})
 
 export default mongoose.model('UserCoupon', userCouponSchema)

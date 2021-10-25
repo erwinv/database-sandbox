@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import koa from 'koa'
-import UserCoupon, { IUserCoupon } from '../model/usercoupon'
+import UserCoupon, { IUserCoupon, NonEditableFields } from '../model/usercoupon'
 import { fakeUserCoupon } from './userCoupon.fake'
 import { getQueryFlag, getQueryNumber, getQueryValue } from '../util'
 
@@ -80,7 +80,7 @@ export function updateOne(): koa.Middleware {
     const body = ctx.request.body
 
     const filter = { _id: ctx.params.id }
-    const update = _.omitBy(body, (_, key) => key.startsWith('_'))
+    const update = _.omitBy(body, (_, key) => NonEditableFields.includes(key))
 
     if (_.isEmpty(update)) {
       ctx.status = 400
