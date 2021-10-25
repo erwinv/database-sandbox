@@ -2,7 +2,6 @@ import http from 'k6/http'
 import { check, fail, sleep } from 'k6'
 import {
   randomIntBetween,
-  randomItem,
   randomString,
   uuidv4,
 } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js'
@@ -39,76 +38,73 @@ export const options = {
   // https://k6.io/docs/using-k6/scenarios/
 }
 
-const SLEEP_DURATION = 0.2
+const SLEEP_DURATION = 0.1
 
 export function setup() {
+  let usercoupons = []
   let res = {}
-  let pass = false
-
-  const initialRequest = randomItem(['createNew', 'randomSample'])
-
-  switch (initialRequest) {
-  case 'createNew':
-    res = http.post('http://localhost:8765/usercoupon?fake=1',
-      {
-        tags: { name: 'createCoupon' }
-      }
-    )
-    pass = check(res, { 'CREATE OK': (r) => r.status == 201 })
-    break;
-  case 'randomSample':
-  default:
-    res = http.get('http://localhost:8765/usercoupon?sample=1', 
-      {
-        tags: { name: 'getCoupon' }
-      }
-    )
-    pass = check(res, { 'GET OK': (r) => r.status == 200 })
+  
+  res = http.post('http://localhost:8765/usercoupon?fake=1',
+    {
+      tags: { name: 'createCoupon' }
+    }
+  )
+  if (!check(res, { 'CREATE OK': (r) => r.status == 201 })) {
+    fail('create coupon failed')
   }
-
-  if (!pass) {
-    fail('creation/random sampling failed')
-  }
+  usercoupons.push(res.json())
   sleep(SLEEP_DURATION)
 
-  return { usercoupon: res.json() }
+  res = http.get('http://localhost:8765/usercoupon?sample=1', 
+    {
+      tags: { name: 'getCoupon' }
+    }
+  )
+  if (!check(res, { 'GET OK': (r) => r.status == 200 })) {
+    fail('get random coupon failed')
+  }
+  usercoupons.push(res.json())
+  sleep(SLEEP_DURATION)
+
+  return { usercoupons }
 }
 
-export default function ({ usercoupon }) {
+export default function ({ usercoupons }) {
   let res = {}
 
   const headers = {
     'content-type': 'application/json'
   }
-  const patchRequests = [{
-    maxUse: randomIntBetween(1, 6),
-    remainingUse: randomIntBetween(1, 6),
-    isProcessing: !usercoupon.isProcessing,
-  }, {
-    isPrepaid: !usercoupon.isPrepaid,
-    origin: randomString(10),
-    isUsed: !usercoupon.isUsed,
-  }, {
-    isActive: !usercoupon.isActive,
-    gsStarIssue: {
-      channelTranId: uuidv4(),
-    },
-  }]
 
-  for (const patchRequest of patchRequests) {
-    res = http.patch(
-      http.url`http://localhost:8765/usercoupon/${usercoupon._id}`,
-      JSON.stringify(patchRequest),
-      {
-        headers,
-        tags: { name: 'updateCoupon' }
-      }
-    )
+  for (const usercoupon of usercoupons) {
+    const patchRequests = [{
+      maxUse: randomIntBetween(1, 6),
+      remainingUse: randomIntBetween(1, 6),
+      isProcessing: !usercoupon.isProcessing,
+    }, {
+      isPrepaid: !usercoupon.isPrepaid,
+      origin: randomString(10),
+      isUsed: !usercoupon.isUsed,
+    }, {
+      isActive: !usercoupon.isActive,
+      gsStarIssue: {
+        channelTranId: uuidv4(),
+      },
+    }]
 
-    if (!check(res, { 'PATCH OK': (r) => r.status == 200 })) {
-      fail('PATCH failed')
+    for (const patchRequest of patchRequests) {
+      res = http.patch(
+        http.url`http://localhost:8765/usercoupon/${usercoupon._id}`,
+        JSON.stringify(patchRequest),
+        {
+          headers,
+          tags: { name: 'updateCoupon' }
+        }
+      )
+
+      check(res, { 'PATCH OK': (r) => r.status == 200 })
+
+      sleep(SLEEP_DURATION)
     }
-
-    sleep(SLEEP_DURATION)
   }
 }
