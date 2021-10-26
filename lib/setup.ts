@@ -7,9 +7,13 @@ export default async function initializeServiceDependencies() {
     initializeObjection(),
   ])
 
-  process.on('beforeExit', teardownServiceDependencies)
-  process.on('SIGINT', teardownServiceDependencies)
-  process.on('SIGTERM', teardownServiceDependencies)
+  return {
+    teardown: teardownServiceDependencies,
+    teardownListener: () => {
+      process.on('SIGINT', teardownServiceDependencies)
+      process.on('SIGTERM', teardownServiceDependencies)
+    }
+  }
 }
 
 export async function teardownServiceDependencies() {

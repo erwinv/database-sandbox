@@ -5,8 +5,9 @@ import env from './lib/env'
 import setup from './lib/setup'
 
 async function main() {
-  await setup()
+  const { teardownListener } = await setup()
   app().listen(env.PORT, () => console.info(`Listening to port: ${env.PORT}`))
+  teardownListener()
 }
 
 const runningAsMain = require.main === module
