@@ -14,9 +14,9 @@ export function create(): koa.Middleware {
       ? fakeUserCoupon(isMerge ? body : undefined)
       : body
 
-    const couponUser = new UserCoupon(doc)
+    const userCoupon = new UserCoupon(doc)
 
-    ctx.body = await couponUser.save()
+    ctx.body = await userCoupon.save()
     ctx.status = 201
   }
 }
