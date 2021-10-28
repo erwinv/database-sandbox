@@ -1,6 +1,8 @@
 import _ from 'lodash'
 
-export function getQueryValue(query: Partial<Record<string, string | string[]>>, name: string) {
+type Query = Partial<Record<string, string | string[]>>
+
+export function getQueryValue(query: Query, name: string) {
   if (_.isNil(query[name])) return null
 
   return _.isArray(query[name])
@@ -8,7 +10,7 @@ export function getQueryValue(query: Partial<Record<string, string | string[]>>,
     : query[name] as string
 }
 
-export function getQueryFlag(query: Partial<Record<string, string | string[]>>, name: string, defaultValue = false) {
+export function getQueryFlag(query: Query, name: string, defaultValue = false) {
   const value = getQueryValue(query, name)
 
   if (_.isNil(value)) return defaultValue
@@ -21,7 +23,7 @@ export function getQueryFlag(query: Partial<Record<string, string | string[]>>, 
     : negative.includes(value.trim().toLowerCase())
 }
 
-export function getQueryNumber(query: Partial<Record<string, string | string[]>>, name: string, defaultValue = 0) {
+export function getQueryNumber(query: Query, name: string, defaultValue = 0) {
   const value = getQueryValue(query, name)
 
   if (_.isNil(value)) return defaultValue
