@@ -14,22 +14,24 @@ function duration(start: number, precision = 3) {
 }
 
 async function seedMongo(total: number, logPrefix = '') {
-  console.log(`${logPrefix}Inserting ${total} documents...`)
-
   let start = now()
-  const userCoupons = _.range(0, total).map(() => fakeUserCoupon())
-  console.info(`${logPrefix}Chunk generation duration: ${duration(start)}s`)
+  const userCoupons = _.range(total).map(() => fakeUserCoupon())
+  console.info(`${logPrefix}Generate fake data duration: ${duration(start)}s`)
 
   start = now()
   await UserCoupon.insertMany(userCoupons)
   console.info(`${logPrefix}Insert duration: ${duration(start, 1)}s`)
 }
 
-function main() {
-  const NUM_WORKERS = 4
+// optimal values for AMD Ryzen 7 PRO 4750U (8 core, 16 threads), 32GB RAM
+// 200,000 writes per 40 seconds or 5,000 writes per second
+const NUM_WORKERS = 8
+const MAX_BATCH_SIZE = 25000
 
-  const [,, total] = process.argv
-  const totalPerWorker = _.round(_.toNumber(total ?? '100000') / NUM_WORKERS)
+function main() {
+  const [,, _total] = process.argv
+  const total = _.toNumber(_total ?? '200000')
+  const totalPerWorker = Math.round(total / NUM_WORKERS)
 
   const start = now()
 
@@ -38,15 +40,13 @@ function main() {
     const worker = new threads.Worker(__filename, { workerData: totalPerWorker })
     worker.on('exit', () => {
       if (++doneWorkers === NUM_WORKERS) {
-        console.info(`Total duration: ${duration(start, 1)}s`)
+        console.info(`Total: ${total} documents, ${NUM_WORKERS} threads, ${duration(start, 1)}s`)
       }
     })
   }
 }
 
 async function worker() {
-  const MAX_BATCH_SIZE = 25000
-
   const total = threads.workerData as number
   const batchSize = Math.min(total, MAX_BATCH_SIZE)
 
@@ -54,7 +54,8 @@ async function worker() {
   try {
     let batchNumber = 1
     for (let remaining = total; remaining > 0; remaining -= batchSize, batchNumber++) {
-      await seedMongo(batchSize, `[thread#${threads.threadId}] [batch#${batchNumber}] `)
+      const thisBatchSize = Math.min(remaining, batchSize)
+      await seedMongo(batchSize, `[thread#${threads.threadId}, batch#${batchNumber}, size=${thisBatchSize}] `)
     }
   } finally {
     await teardown()
