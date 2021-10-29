@@ -3,7 +3,7 @@ import _ from 'lodash'
 import * as threads from 'worker_threads'
 import setup, { teardownMongoose as teardown } from '../lib/database/mongo'
 import UserCoupon from '../lib/model/usercoupon'
-import { fakeUserCoupon } from '../lib/controller/userCoupon.fake'
+import { fakeUserCoupon } from '../lib/model/userCoupon.fake'
 import { chunk, pigeonhole, now, duration } from './util'
 
 async function seedMongo(total: number, logPrefix = '') {

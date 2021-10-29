@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import koa from 'koa'
 import UserCoupon, { IUserCoupon, NonEditableFields } from '../model/usercoupon'
-import { fakeUserCoupon } from './userCoupon.fake'
+import { fakeUserCoupon } from '../model/userCoupon.fake'
 import { getQueryFlag, getQueryNumber, getQueryValue } from '../util'
 
 export function create(): koa.Middleware {

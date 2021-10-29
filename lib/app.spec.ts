@@ -2,7 +2,7 @@ import _ from 'lodash'
 import supertest from 'supertest'
 import app from './app'
 import { IUserCouponDoc } from './model/usercoupon'
-import { fakeUserCoupon } from './controller/userCoupon.fake'
+import { fakeUserCoupon } from './model/userCoupon.fake'
 
 let userCoupon: IUserCouponDoc
 
