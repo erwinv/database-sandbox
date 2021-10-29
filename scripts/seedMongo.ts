@@ -16,10 +16,10 @@ async function seedMongo(total: number, logPrefix = '') {
   console.info(`${logPrefix}Insert duration: ${duration(start, 1)}s`)
 }
 
-// optimal values for AMD Ryzen 7 PRO 4750U (8 core, 16 threads), 32GB RAM
-// 200,000 writes per 40 seconds or 5,000 writes per second
+// machine-specific optimal values
 const NUM_WORKERS = 8
-const MAX_BATCH_SIZE = 12500
+// const MAX_BATCH_SIZE = 25000 // ThinkPad X13 AMD Ryzen 7 PRO 4750U (8 core, 16 threads), 32GB RAM
+const MAX_BATCH_SIZE = 12500 // Ryzen 5 3600 16GB RAM Desktop
 
 function main() {
   const [,, _total] = process.argv
@@ -44,16 +44,11 @@ function main() {
 
 async function worker() {
   const total = threads.workerData as number
-  const batchSize = Math.min(total, MAX_BATCH_SIZE)
 
   await setup()
   try {
-    let batchNumber = 0;
-    let thisBatchSize = batchSize;
-    for (let remaining = total; remaining > 0; remaining -= thisBatchSize) {
-      batchNumber++;
-      thisBatchSize = Math.min(remaining, batchSize);
-      await seedMongo(batchSize, `[thread#${threads.threadId}, batch#${batchNumber}, size=${thisBatchSize}] `)
+    for (const [i, batchSize] of chunk(total, MAX_BATCH_SIZE).entries()) {
+      await seedMongo(batchSize, `[thread#${threads.threadId}, batch#${i+1}, size=${batchSize}] `)
     }
   } finally {
     await teardown()
