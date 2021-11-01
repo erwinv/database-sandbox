@@ -5,7 +5,7 @@ import { DateTime } from 'luxon'
 import setup, { teardownMongoose as teardown } from '../lib/database/mongo'
 import UserCoupon from '../lib/model/usercoupon'
 import { fakeUserCoupon } from '../lib/model/userCoupon.fake'
-import { chunk, pigeonhole, now, duration } from './util'
+import { chunk, now, duration } from './util'
 
 async function seedMongo(total: number, logPrefix = '') {
   let start = now()
@@ -24,41 +24,62 @@ async function seedMongo(total: number, logPrefix = '') {
 
 // machine-specific optimal values
 const NUM_WORKERS = 8
-const MAX_BATCH_SIZE = 25000 // ThinkPad X13 AMD Ryzen 7 PRO 4750U (8 core, 16 threads), 32GB RAM
-// const MAX_BATCH_SIZE = 12500 // Ryzen 5 3600 16GB RAM Desktop
+const MAX_BATCH_SIZE = 25000 // ThinkPad X13 AMD Ryzen 7 PRO 4750U (8 cores, 16 threads), 32GB RAM
+// const MAX_BATCH_SIZE = 12500 // Ryzen 5 3600 (6 cores, 12 threads) 16GB RAM Desktop
 
-function main() {
+const READY = 0
+const TERMINATE = -1
+
+async function main() {
   const [,, _total] = process.argv
   const total = _.toNumber(_total ?? '200000')
 
-  const totalsPerWorker = pigeonhole(chunk(total, MAX_BATCH_SIZE), NUM_WORKERS)
+  const chunks = chunk(total, MAX_BATCH_SIZE)
+  const workers = _.range(NUM_WORKERS).map(() => new threads.Worker(__filename))
 
   const start = now()
 
-  let doneWorkers = 0
-  for (const totalOfWorker of totalsPerWorker) {
-    const worker = new threads.Worker(__filename, {
-      workerData: totalOfWorker
-    })
-    worker.on('exit', () => {
-      if (++doneWorkers === NUM_WORKERS) {
-        console.info(`Total: ${total} documents, ${NUM_WORKERS} threads, ${duration(start, 1)}s`)
+  await Promise.all(workers.map(worker => new Promise((resolve) => {
+    worker.on('exit', resolve)
+    worker.on('message', (value: number) => {
+      if (value === READY) {
+        const chunk = chunks.shift()
+        if (!chunk) {
+          worker.postMessage(TERMINATE)
+        } else {
+          worker.postMessage(chunk)
+        }
+      } else if (value > 0) {
+        chunks.unshift(value)
       }
     })
-  }
+  })))
+
+  console.info(`Total: ${total} documents, ${NUM_WORKERS} threads, ${duration(start, 1)}s`)
 }
 
-async function worker() {
-  const total = threads.workerData as number
-
+async function worker(parentPort: threads.MessagePort) {
   await setup()
-  try {
-    for (const [i, batchSize] of chunk(total, MAX_BATCH_SIZE).entries()) {
-      await seedMongo(batchSize, `[thread#${threads.threadId}, batch#${i+1}, size=${batchSize}] `)
+
+  let batchNumber = 0
+
+  parentPort.on('message', async function work(value: number) {
+    if (value === TERMINATE) {
+      parentPort.removeListener('message', work)
+      return teardown()
     }
-  } finally {
-    await teardown()
-  }
+
+    const batchSize = value
+    try {
+      await seedMongo(batchSize, `[thread#${threads.threadId}, batch#${++batchNumber}, size=${batchSize}] `)
+      parentPort.postMessage(READY)
+    } catch {
+      batchNumber--
+      parentPort.postMessage(batchSize)
+    }
+  })
+
+  parentPort.postMessage(READY)
 }
 
 const runningAsMain = require.main === module
@@ -66,6 +87,6 @@ if (runningAsMain) {
   if (threads.isMainThread) {
     main()
   } else {
-    worker()
+    worker(threads.parentPort!)
   }
 }
