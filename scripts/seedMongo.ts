@@ -76,6 +76,7 @@ async function worker(parentPort: threads.MessagePort) {
     } catch {
       batchNumber--
       parentPort.postMessage(batchSize)
+      parentPort.postMessage(READY)
     }
   })
 
