@@ -1,16 +1,16 @@
 import koa from 'koa'
-import Notification from '../model/notification'
+import Activity from '../model/activity'
 
 export function createWeekPartitions(): koa.Middleware {
   return async (ctx) => {
-    await Notification.ensurePartitions()
+    await Activity.ensurePartitions()
     ctx.status = 200
   }
 }
 
 export function dropOldPartitions(): koa.Middleware {
   return async (ctx) => {
-    await Notification.dropOldPartitions()
+    await Activity.dropOldPartitions()
     ctx.status = 200
   }
 }

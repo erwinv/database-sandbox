@@ -3,7 +3,7 @@ import path from 'path'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 
 declare global {
-  var mongod: MongoMemoryServer
+  var mongod: MongoMemoryServer // eslint-disable-line no-var
 }
 
 export default async () => {

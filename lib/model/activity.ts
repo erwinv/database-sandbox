@@ -45,7 +45,43 @@ function isPartitionObsolete(partitionName: string) {
   return thisWeekWednesday.diff(partitionWednesday) > Duration.fromISO(`P${numWeeks}W`)
 }
 
-export default class Notification extends objection.Model {
+/*
+DDL
+CREATE TABLE public.activities (
+	id bigserial NOT NULL,
+	created_at timestamptz NULL,
+	updated_at timestamptz NULL,
+	client_id text NULL,
+	fid text NULL,
+	process_name text NULL,
+	udid text NULL,
+	message_th text NULL,
+	message_en text NULL,
+	"data" jsonb NULL,
+	uuid text NULL,
+	schedule_activity_id int4 NULL,
+	CONSTRAINT activities_pkey PRIMARY KEY (id),
+	CONSTRAINT activities_udid_key UNIQUE (udid),
+	CONSTRAINT activities_uuid_key UNIQUE (uuid)
+);
+CREATE INDEX idx_activities_client_id ON public.activities USING btree (client_id);
+CREATE INDEX idx_activities_created_at ON public.activities USING btree (created_at);
+CREATE INDEX idx_activities_fid ON public.activities USING btree (fid);
+CREATE INDEX idx_activities_process_name ON public.activities USING btree (process_name);
+CREATE INDEX idx_activities_updated_at ON public.activities USING btree (updated_at);
+*/
+
+export default class Activity extends objection.Model {
+  static tableName = 'activites'
+
+  static jsonSchema = {
+    type: 'object',
+    required: [],
+    properties: {
+
+    },
+  }
+
   static async ensurePartitions() {
     const knex = this.knex()
 

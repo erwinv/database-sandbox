@@ -5,7 +5,7 @@ import Router from '@koa/router'
 import {
   userCoupon,
   node,
-  notification,
+  activity,
 } from './controller'
 
 export default () => {
@@ -27,8 +27,8 @@ export default () => {
 
     .del('/usercoupons', userCoupon.bulkDeleteOld())
 
-    .post('/admin/notification/partitions', notification.createWeekPartitions())
-    .del('/admin/notification/oldpartitions', notification.dropOldPartitions())
+    .post('/admin/notification/partitions', activity.createWeekPartitions())
+    .del('/admin/notification/oldpartitions', activity.dropOldPartitions())
 
   return app
     .use(logger())
