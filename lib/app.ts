@@ -27,8 +27,8 @@ export default () => {
 
     .del('/usercoupons', userCoupon.bulkDeleteOld())
 
-    .post('/admin/notification/partitions', activity.createWeekPartitions())
-    .del('/admin/notification/oldpartitions', activity.dropOldPartitions())
+    .post('/admin/activity/partitions', activity.createWeekPartitions())
+    .del('/admin/activity/oldpartitions', activity.dropOldPartitions())
 
   return app
     .use(logger())

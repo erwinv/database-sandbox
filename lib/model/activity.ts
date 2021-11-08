@@ -4,25 +4,25 @@ import { DateTime, Duration } from 'luxon'
 
 const timeZone = 'Asia/Bangkok'
 const numWeeks = 12
-const tableName = 'notificationV2'
+const tableName = 'activity2'
 
 function createWeekPartition(now: DateTime) {
   const thisWeekWednesday = now.set({weekday: 3}).startOf('day')
   const thisWeekSunday = now.set({weekday: 0}).startOf('day')
   const nextWeekSunday = now.set({weekday: 7}).startOf('day')
 
-  return `CREATE TABLE IF NOT EXISTS notification_y${thisWeekWednesday.year}w${thisWeekWednesday.weekNumber} PARTITION OF ${tableName}
-  FOR VALUES FROM ('${thisWeekSunday.toISO()}') TO ('${nextWeekSunday.toISO()}');`
+  return `CREATE TABLE IF NOT EXISTS activity_y${thisWeekWednesday.year}w${thisWeekWednesday.weekNumber} PARTITION OF ${tableName}
+  FOR VALUES FROM ('${thisWeekSunday.toISO()}') TO ('${nextWeekSunday.toISO()}')`
 }
 
 function getAllPartitionNames() {
   return `SELECT inhrelid::regclass AS child
   FROM pg_catalog.pg_inherits
-  WHERE inhparent = '${tableName}'::regclass;`
+  WHERE inhparent = '${tableName}'::regclass`
 }
 
 function isPartitionObsolete(partitionName: string) {
-  const match = /^notification_y(\d+)w(\d+)$/.exec(partitionName)
+  const match = /^activity_y(\d+)w(\d+)$/.exec(partitionName)
   if (!match) return false
 
   const [, year, week] = match
@@ -72,13 +72,23 @@ CREATE INDEX idx_activities_updated_at ON public.activities USING btree (updated
 */
 
 export default class Activity extends objection.Model {
-  static tableName = 'activites'
+  static tableName = 'activity'
 
+  static columnNameMappers = objection.snakeCaseMappers()
   static jsonSchema = {
     type: 'object',
-    required: [],
     properties: {
-
+      createdAt: { type: 'date-time' },
+      updatedAt: { type: 'date-time' },
+      clientId: { type: 'string' },
+      fid: { type: 'string' },
+      processName: { type: 'string' },
+      udid: { type: 'string' },
+      messageTh: { type: 'string' },
+      messageEn: { type: 'string' },
+      data: { type: 'object' },
+      uuid: { type: 'string' },
+      scheduleActivityId: { type: 'integer' },
     },
   }
 

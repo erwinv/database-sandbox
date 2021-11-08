@@ -15,7 +15,10 @@
     "start": "node out/main.js",
     "build:watch": "tsc --watch",
     "test:watch": "jest --watch --verbose=false --coverage=false",
-    "start:watch": "nodemon out/main.js"
+    "start:watch": "nodemon out/main.js",
+    "migrate:make": "knex migrate:make --esm --env makeMigration",
+    "migrate:latest": "knex migrate:latest --esm --env runMigration",
+    "migrate:rollback": "knex migrate:rollback --esm --env runMigration"
   },
   "repository": {
     "type": "git",

@@ -20,7 +20,8 @@
     "main.ts",
     "lib/**/*",
     "test/**/*",
-    "scripts/**/*"
+    "scripts/**/*",
+    "migrations/**/*"
   ],
   "exclude": [
     "out/**/*"

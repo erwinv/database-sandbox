@@ -1,4 +1,4 @@
-const table = {
+export const table = {
   "activities": [
     {
       "id" : 8286,
