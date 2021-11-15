@@ -27,6 +27,11 @@ export default () => {
 
     .del('/usercoupons', userCoupon.bulkDeleteOld())
 
+    .post('/activity', activity.insert())
+    .get('/activity/:id', activity.select())
+    .patch('/activity/:id', activity.update())
+    .del('/activity/:id', activity.del())
+
     .post('/admin/activity/partitions', activity.createWeekPartitions())
     .del('/admin/activity/oldpartitions', activity.dropOldPartitions())
 

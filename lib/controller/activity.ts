@@ -14,3 +14,27 @@ export function dropOldPartitions(): koa.Middleware {
     ctx.status = 200
   }
 }
+
+export function insert(): koa.Middleware {
+  return async (ctx) => {
+    ctx.status = 501
+  }
+}
+
+export function select(): koa.Middleware {
+  return async (ctx) => {
+    ctx.status = 501
+  }
+}
+
+export function update(): koa.Middleware {
+  return async (ctx) => {
+    ctx.status = 501
+  }
+}
+
+export function del(): koa.Middleware {
+  return async (ctx) => {
+    ctx.status = 501
+  }
+}
