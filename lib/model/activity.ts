@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import objection from 'objection'
 import { DateTime, Duration } from 'luxon'
+import { nullable } from '../util'
 
 const timeZone = 'Asia/Bangkok'
 const numWeeks = 12
@@ -45,32 +46,6 @@ function isPartitionObsolete(partitionName: string) {
   return thisWeekWednesday.diff(partitionWednesday) > Duration.fromISO(`P${numWeeks}W`)
 }
 
-/*
-DDL
-CREATE TABLE public.activities (
-	id bigserial NOT NULL,
-	created_at timestamptz NULL,
-	updated_at timestamptz NULL,
-	client_id text NULL,
-	fid text NULL,
-	process_name text NULL,
-	udid text NULL,
-	message_th text NULL,
-	message_en text NULL,
-	"data" jsonb NULL,
-	uuid text NULL,
-	schedule_activity_id int4 NULL,
-	CONSTRAINT activities_pkey PRIMARY KEY (id),
-	CONSTRAINT activities_udid_key UNIQUE (udid),
-	CONSTRAINT activities_uuid_key UNIQUE (uuid)
-);
-CREATE INDEX idx_activities_client_id ON public.activities USING btree (client_id);
-CREATE INDEX idx_activities_created_at ON public.activities USING btree (created_at);
-CREATE INDEX idx_activities_fid ON public.activities USING btree (fid);
-CREATE INDEX idx_activities_process_name ON public.activities USING btree (process_name);
-CREATE INDEX idx_activities_updated_at ON public.activities USING btree (updated_at);
-*/
-
 export default class Activity extends objection.Model {
   static tableName = 'activity'
 
@@ -78,18 +53,68 @@ export default class Activity extends objection.Model {
   static jsonSchema = {
     type: 'object',
     properties: {
-      createdAt: { type: 'date-time' },
-      updatedAt: { type: 'date-time' },
-      clientId: { type: 'string' },
-      fid: { type: 'string' },
-      processName: { type: 'string' },
-      udid: { type: 'string' },
-      messageTh: { type: 'string' },
-      messageEn: { type: 'string' },
-      data: { type: 'object' },
-      uuid: { type: 'string' },
-      scheduleActivityId: { type: 'integer' },
+      createdAt: { type: 'string', format: 'date-time' },
+      updatedAt: { type: 'string', format: 'date-time' },
+      clientId: nullable({ type: 'string' }),
+      fid: nullable({ type: 'string' }),
+      processName: nullable({ type: 'string' }),
+      udid: nullable({ type: 'string' }),
+      messageTh: nullable({ type: 'string' }),
+      messageEn: nullable({ type: 'string' }),
+      data: nullable({ type: 'object' }),
+      uuid: nullable({ type: 'string', format: 'uuid' }),
+      scheduleActivityId: nullable({ type: 'integer' }),
     },
+  }
+
+  $parseJson(_json: objection.Pojo, opts: objection.ModelOptions) {
+    const json = super.$parseJson(_json)
+
+    if (_.isString(json.data)) {
+      try {
+        json.data = JSON.parse(json.data)
+      } catch (error) {
+        if (!opts.skipValidation && error instanceof Error) {
+          throw new objection.ValidationError({
+            type: 'ModelValidation',
+            statusCode: 400,
+            message: 'data: should be valid JSON',
+            data: {
+              name: error.name,
+              message: error.message,
+              input: json.data,
+            },
+          })
+        } else {
+          throw error
+        }
+      }
+    }
+
+    if (!opts.patch) {
+      _.defaults(json, {
+        clientId: null,
+        fid: null,
+        processName: null,
+        udid: null,
+        messageTh: null,
+        messageEn: null,
+        data: null,
+        uuid: null,
+        scheduleActivityId: null,
+      })
+    }
+
+    return json
+  }
+  $formatJson(_json: objection.Pojo) {
+    const json = super.$formatJson(_json)
+
+    if (_.isObject(json.data)) {
+      json.data = JSON.stringify(json.data)
+    }
+
+    return json
   }
 
   static async ensurePartitions() {

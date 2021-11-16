@@ -30,3 +30,12 @@ export function getQueryNumber(query: Query, name: string, defaultValue = 0) {
 
   return _.toNumber(value)
 }
+
+export function nullable(jsonSchema: Record<string, unknown>) {
+  return {
+    anyOf: [
+      { type: 'null' },
+      jsonSchema
+    ]
+  }
+}

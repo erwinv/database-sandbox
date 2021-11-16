@@ -17,24 +17,32 @@ export function dropOldPartitions(): koa.Middleware {
 
 export function insert(): koa.Middleware {
   return async (ctx) => {
-    ctx.status = 501
+    const { body: reqBody } = ctx.request
+    ctx.body = await Activity.query().insert(reqBody)
   }
 }
 
 export function select(): koa.Middleware {
   return async (ctx) => {
-    ctx.status = 501
+    const { id } = ctx.params
+    ctx.body = await Activity.query().findById(id)
+      .throwIfNotFound()
   }
 }
 
-export function update(): koa.Middleware {
+export function update(method: 'update' | 'patch' = 'update'): koa.Middleware {
   return async (ctx) => {
-    ctx.status = 501
+    const { id } = ctx.params
+    const { body: reqBody } = ctx.request
+
+    ctx.body = await Activity.query()[`${method}AndFetchById`](id, reqBody)
+      .throwIfNotFound()
   }
 }
 
 export function del(): koa.Middleware {
   return async (ctx) => {
-    ctx.status = 501
+    const { id } = ctx.params
+    ctx.body = await Activity.query().deleteById(id)
   }
 }

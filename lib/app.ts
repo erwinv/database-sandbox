@@ -7,6 +7,9 @@ import {
   node,
   activity,
 } from './controller'
+import {
+  ObjectionErrors,
+} from './middleware'
 
 export default () => {
   const app = new Koa()
@@ -27,10 +30,26 @@ export default () => {
 
     .del('/usercoupons', userCoupon.bulkDeleteOld())
 
-    .post('/activity', activity.insert())
-    .get('/activity/:id', activity.select())
-    .patch('/activity/:id', activity.update())
-    .del('/activity/:id', activity.del())
+    .post('/activity',
+      ObjectionErrors(),
+      activity.insert()
+    )
+    .get('/activity/:id',
+      ObjectionErrors(),
+      activity.select()
+    )
+    .put('/activity/:id',
+      ObjectionErrors(),
+      activity.update(),
+    )
+    .patch('/activity/:id',
+      ObjectionErrors(),
+      activity.update('patch')
+    )
+    .del('/activity/:id',
+      ObjectionErrors(),
+      activity.del()
+    )
 
     .post('/admin/activity/partitions', activity.createWeekPartitions())
     .del('/admin/activity/oldpartitions', activity.dropOldPartitions())
