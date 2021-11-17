@@ -92,20 +92,22 @@ DELETE {{base_url}}/admin/activity/oldpartitions
 
 ### Activity API
 
-@activityId = 5
+@activityId = 3
+
+POST {{base_url}}/activity?fake=1
 
 POST {{base_url}}/activity
 Content-Type: application/json
 
 {
-  "clientId" : "gosoft",
-  "fid" : "sVQwFhX77UQD42G7oDEkzGBlQ8z1",
-  "processName" : "earn",
+  "clientId" : "",
+  "fid" : "",
+  "processName" : "",
   "udid" : null,
-  "messageTh" : "คุณได้รับ All Member Point จำนวน 9999 แต้ม",
-  "messageEn" : "คุณได้รับ All Member Point จำนวน 9999 แต้ม",
-  "data" : "{\"transactions\": [{\"reward_id\": \"808\", \"reward_qty\": \"9999\", \"reward_name\": \"All Member Point\", \"reward_type\": \"LP\", \"reward_sub_type\": \"ACC\", \"reward_unit_name\": \"แต้ม\"}]}",
-  "uuid" : "3cc504f0-c3e6-11e9-adae-e1d2d342d4e0",
+  "messageTh" : "",
+  "messageEn" : "",
+  "data" : "{}",
+  "uuid" : "",
   "scheduleActivityId" : null
 }
 

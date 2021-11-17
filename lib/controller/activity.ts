@@ -1,5 +1,7 @@
 import koa from 'koa'
 import Activity from '../model/activity'
+import { fakeActivity } from '../model/activity.fake'
+import { getQueryFlag } from '../util'
 
 export function createWeekPartitions(): koa.Middleware {
   return async (ctx) => {
@@ -17,8 +19,16 @@ export function dropOldPartitions(): koa.Middleware {
 
 export function insert(): koa.Middleware {
   return async (ctx) => {
+    const isFake = getQueryFlag(ctx.query, 'fake')
+    const isMerge = getQueryFlag(ctx.query, 'merge')
+
     const { body: reqBody } = ctx.request
-    ctx.body = await Activity.query().insert(reqBody)
+
+    const body = isFake
+      ? fakeActivity(isMerge ? reqBody : undefined)
+      : reqBody
+
+    ctx.body = await Activity.query().insert(body)
   }
 }
 
